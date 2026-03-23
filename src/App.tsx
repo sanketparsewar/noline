@@ -45,6 +45,7 @@ import {
   Store,
   ArrowRight,
   UserPlus,
+  Download,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -281,6 +282,35 @@ const RestaurantDashboard = ({ restaurantId }: { restaurantId: string }) => {
     });
   };
 
+  const downloadQRCode = () => {
+    const svg = document.getElementById("qr-code-svg");
+    if (!svg) return;
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    img.onload = () => {
+      canvas.width = 1000;
+      canvas.height = 1000;
+      if (ctx) {
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 50, 50, 900, 900);
+        const pngFile = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.download = `${restaurant?.name || "restaurant"}-qr-code.png`;
+        downloadLink.href = pngFile;
+        downloadLink.click();
+      }
+    };
+
+    img.src =
+      "data:image/svg+xml;base64," +
+      btoa(unescape(encodeURIComponent(svgData)));
+  };
+
   const joinUrl = `${import.meta.env.VITE_QR_CODE_URL}/join?restaurantId=${restaurantId}`;
 
   if (!restaurant) {
@@ -322,10 +352,16 @@ const RestaurantDashboard = ({ restaurantId }: { restaurantId: string }) => {
           >
             <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
               <h3 className="text-lg font-semibold mb-4">Customer Scan QR</h3>
-              <div className="bg-white p-4 rounded-xl shadow-inner border border-gray-50">
-                <QRCodeSVG value={joinUrl} size={200} />
+              <div className="bg-white p-4 rounded-xl shadow-inner border border-gray-50 mb-6">
+                <QRCodeSVG id="qr-code-svg" value={joinUrl} size={200} />
               </div>
-              <p className="mt-4 text-sm text-gray-500 max-w-xs">
+              <button
+                onClick={downloadQRCode}
+                className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 mb-6"
+              >
+                <Download className="w-5 h-5" /> Download QR for Print
+              </button>
+              <p className="text-sm text-gray-500 max-w-xs">
                 Place this QR code at your reception counter for customers to
                 join the queue.
               </p>
