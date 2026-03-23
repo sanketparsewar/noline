@@ -136,7 +136,7 @@ const LiveClock = () => {
   }, []);
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 min-w-[240px]">
+    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 min-w-60">
       <div className="bg-indigo-50 p-3 rounded-xl">
         <Clock className="w-6 h-6 text-indigo-600" />
       </div>
@@ -469,7 +469,7 @@ const RestaurantDashboard = ({ restaurantId }: { restaurantId: string }) => {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
         {/* Current Queue Section */}
         <div className="xl:col-span-5 space-y-6">
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm min-h-[500px]">
+          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm min-h-125">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <div className="bg-indigo-50 p-2 rounded-lg">
@@ -534,7 +534,7 @@ const RestaurantDashboard = ({ restaurantId }: { restaurantId: string }) => {
                 </motion.div>
               ))}
               {activeQueue.length === 0 && (
-                <div className="text-center py-20 bg-gray-50/50 rounded-[2rem] border-2 border-dashed border-gray-100">
+                <div className="text-center py-20 bg-gray-50/50 rounded-4xl border-2 border-dashed border-gray-100">
                   <div className="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                     <Users className="w-8 h-8 text-gray-200" />
                   </div>
@@ -912,7 +912,7 @@ const CustomerJoin = () => {
             </p>
 
             <div
-              className={`rounded-[2rem] p-10 mb-10 transition-all transform ${
+              className={`rounded-4xl p-10 mb-10 transition-all transform ${
                 isCalled
                   ? "bg-amber-600 text-white scale-110 shadow-xl shadow-amber-200"
                   : isCompleted
