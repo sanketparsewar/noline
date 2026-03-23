@@ -19,6 +19,7 @@ service cloud.firestore {
              data.address is string && data.address.size() > 0 && data.address.size() < 200 &&
              data.ownerUid is string &&
              (!('lastTokenNumber' in data) || (data.lastTokenNumber is int && data.lastTokenNumber >= 0)) &&
+             (!('lastTokenDate' in data) || (data.lastTokenDate is string)) &&
              (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
@@ -42,22 +43,26 @@ service cloud.firestore {
       
       // Only authenticated users can create a restaurant
       allow create: if isAuthenticated() && 
-                      request.resource.data.ownerUid == request.auth.uid;
+                      request.resource.data.ownerUid == request.auth.uid &&
+                      isValidRestaurant(request.resource.data);
       
-      // Allow owner to update everything, OR anyone to increment lastTokenNumber
-      allow update: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) ||
-                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastTokenNumber']));
+      // Allow owner to update everything, OR anyone to increment lastTokenNumber and lastTokenDate
+      allow update: if isValidRestaurant(request.resource.data) && (
+                      (isAuthenticated() && resource.data.ownerUid == request.auth.uid) ||
+                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastTokenNumber', 'lastTokenDate']))
+                    );
       
       // Queue subcollection
       match /queue/{queueId} {
         // Anyone can read queue entries (needed for status check)
         allow read: if true;
         
-        // Anyone can join the queue
-        allow create: if true;
+        // Anyone can join the queue if data is valid
+        allow create: if isValidQueueEntry(request.resource.data);
         
         // Only the restaurant owner can update or delete entries
-        allow update, delete: if isRestaurantOwner(restaurantId);
+        allow update: if isRestaurantOwner(restaurantId) && isValidQueueEntry(request.resource.data);
+        allow delete: if isRestaurantOwner(restaurantId);
       }
     }
   }

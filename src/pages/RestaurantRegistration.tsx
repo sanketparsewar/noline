@@ -21,6 +21,7 @@ const RestaurantRegistration = () => {
         address,
         ownerUid: auth.currentUser.uid,
         lastTokenNumber: 0,
+        lastTokenDate: new Date().toISOString().split("T")[0],
         createdAt: serverTimestamp(),
       });
       navigate(`/dashboard/${docRef.id}`);

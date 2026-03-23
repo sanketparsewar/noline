@@ -91,11 +91,21 @@ const CustomerJoin = () => {
           throw new Error("Restaurant does not exist!");
         }
 
-        const currentLastToken = restaurantDoc.data().lastTokenNumber || 0;
-        const nextToken = currentLastToken + 1;
+        const restaurantData = restaurantDoc.data();
+        const currentLastToken = restaurantData.lastTokenNumber || 0;
+        const lastTokenDate = restaurantData.lastTokenDate || "";
+        const today = new Date().toISOString().split("T")[0];
 
-        // Update restaurant's last token number
-        transaction.update(restaurantRef, { lastTokenNumber: nextToken });
+        let nextToken = currentLastToken + 1;
+        if (lastTokenDate !== today) {
+          nextToken = 1;
+        }
+
+        // Update restaurant's last token number and date
+        transaction.update(restaurantRef, {
+          lastTokenNumber: nextToken,
+          lastTokenDate: today,
+        });
 
         // Add new queue entry
         const queueRef = doc(

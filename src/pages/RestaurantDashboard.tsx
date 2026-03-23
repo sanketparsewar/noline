@@ -8,6 +8,7 @@ import {
   orderBy,
   doc,
   getDoc,
+  deleteDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
@@ -20,6 +21,10 @@ import {
   Download,
   Calendar,
   FileDown,
+  Trash2,
+  ChevronDown,
+  Filter,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import LiveClock from "../components/LiveClock";
@@ -34,6 +39,13 @@ const RestaurantDashboard = () => {
     new Date().toISOString().split("T")[0],
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportStartDate, setExportStartDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+  const [exportEndDate, setExportEndDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const recordsPerPage = 20;
 
   useEffect(() => {
@@ -69,6 +81,11 @@ const RestaurantDashboard = () => {
     });
   };
 
+  const deleteEntry = async (id: string) => {
+    if (!restaurantId) return;
+    await deleteDoc(doc(db, "restaurants", restaurantId, "queue", id));
+  };
+
   const downloadQRCode = () => {
     const svg = document.getElementById("qr-code-svg");
     if (!svg) return;
@@ -98,12 +115,24 @@ const RestaurantDashboard = () => {
       btoa(unescape(encodeURIComponent(svgData)));
   };
 
-  const exportHistory = () => {
-    const completed = queue.filter((e) => e.status === "completed");
+  const exportHistory = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const filtered = queue.filter((e) => {
+      if (e.status !== "completed") return false;
+      const date = e.createdAt?.toDate ? e.createdAt.toDate() : new Date();
+      return date >= start && date <= end;
+    });
+
+    if (filtered.length === 0) return;
+
     const csvContent =
       "data:text/csv;charset=utf-8," +
       "Token,Name,Phone,Date,Time\n" +
-      completed
+      filtered
         .map((e) => {
           const date = e.createdAt?.toDate ? e.createdAt.toDate() : new Date();
           return `${e.tokenNumber},${e.customerName},${e.customerPhone},${date.toLocaleDateString()},${date.toLocaleTimeString()}`;
@@ -115,11 +144,26 @@ const RestaurantDashboard = () => {
     link.setAttribute("href", encodedUri);
     link.setAttribute(
       "download",
-      `${restaurant?.name || "restaurant"}-history.csv`,
+      `${restaurant?.name || "restaurant"}-history-${startDate}-to-${endDate}.csv`,
     );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setShowExportModal(false);
+  };
+
+  const setTodayRange = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setExportStartDate(today);
+    setExportEndDate(today);
+  };
+
+  const setYesterdayRange = () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yStr = yesterday.toISOString().split("T")[0];
+    setExportStartDate(yStr);
+    setExportEndDate(yStr);
   };
 
   const joinUrl = `${import.meta.env.VITE_QR_CODE_URL}/join?restaurantId=${restaurantId}`;
@@ -154,6 +198,101 @@ const RestaurantDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto mt-8 px-6 pb-12">
+      {/* Export Modal */}
+      <AnimatePresence>
+        {showExportModal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900">
+                  Export History
+                </h3>
+                <button
+                  onClick={() => setShowExportModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="space-y-4 mb-8">
+                <button
+                  onClick={setTodayRange}
+                  className={`w-full py-3 px-4 rounded-xl font-bold text-left transition-all border ${
+                    exportStartDate ===
+                      new Date().toISOString().split("T")[0] &&
+                    exportEndDate === new Date().toISOString().split("T")[0]
+                      ? "bg-indigo-50 border-indigo-200 text-indigo-600"
+                      : "bg-white border-gray-100 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  Today
+                </button>
+                <button
+                  onClick={setYesterdayRange}
+                  className={`w-full py-3 px-4 rounded-xl font-bold text-left transition-all border ${
+                    exportStartDate ===
+                      new Date(Date.now() - 86400000)
+                        .toISOString()
+                        .split("T")[0] &&
+                    exportEndDate ===
+                      new Date(Date.now() - 86400000)
+                        .toISOString()
+                        .split("T")[0]
+                      ? "bg-indigo-50 border-indigo-200 text-indigo-600"
+                      : "bg-white border-gray-100 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  Yesterday
+                </button>
+
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">
+                    Custom Range
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 mb-1">
+                        Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={exportStartDate}
+                        onChange={(e) => setExportStartDate(e.target.value)}
+                        className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 mb-1">
+                        End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={exportEndDate}
+                        onChange={(e) => setExportEndDate(e.target.value)}
+                        className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => exportHistory(exportStartDate, exportEndDate)}
+                className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2"
+              >
+                <FileDown className="w-5 h-5" /> Download CSV
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
         <div>
@@ -264,6 +403,13 @@ const RestaurantDashboard = () => {
                     </div>
                   </div>
                   <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => deleteEntry(entry.id)}
+                      className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      title="Delete Record"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                     {entry.status === "waiting" ? (
                       <button
                         onClick={() => updateStatus(entry.id, "called")}
@@ -325,7 +471,7 @@ const RestaurantDashboard = () => {
                   />
                 </div>
                 <button
-                  onClick={exportHistory}
+                  onClick={() => setShowExportModal(true)}
                   className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
                 >
                   <FileDown className="w-4 h-4" /> Export
@@ -348,6 +494,9 @@ const RestaurantDashboard = () => {
                     </th>
                     <th className="px-4 sm:px-6 py-4 text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest">
                       Time
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest text-right">
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -386,6 +535,15 @@ const RestaurantDashboard = () => {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 text-right">
+                          <button
+                            onClick={() => deleteEntry(entry.id)}
+                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                            title="Delete Record"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </td>
                       </tr>
                     );

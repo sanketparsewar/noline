@@ -34,6 +34,7 @@ export interface Restaurant {
   address: string;
   ownerUid: string;
   lastTokenNumber: number;
+  lastTokenDate?: string; // Format: YYYY-MM-DD
   createdAt: any;
 }
 
