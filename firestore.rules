@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isRestaurantOwner(restaurantId) {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/restaurants/$(restaurantId)).data.ownerUid == request.auth.uid;
+    }
+
+    function isValidRestaurant(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.address is string && data.address.size() > 0 && data.address.size() < 200 &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    function isValidQueueEntry(data) {
+      return data.customerName is string && data.customerName.size() > 0 && data.customerName.size() < 50 &&
+             data.customerPhone is string && data.customerPhone.size() > 0 && data.customerPhone.size() < 20 &&
+             data.tokenNumber is int && data.tokenNumber > 0 &&
+             data.status in ['waiting', 'called', 'completed'];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /restaurants/{restaurantId} {
+      // Anyone can read restaurant details (needed for the join page)
+      allow read: if true;
+      
+      // Only authenticated users can create a restaurant, and they must be the owner
+      allow create: if isAuthenticated() && isValidRestaurant(request.resource.data);
+      
+      // Only the owner can update their restaurant
+      allow update: if isAuthenticated() && 
+                      resource.data.ownerUid == request.auth.uid && 
+                      isValidRestaurant(request.resource.data);
+      
+      // Queue subcollection
+      match /queue/{queueId} {
+        // Restaurant owner can see all queue entries
+        // Customers can see their own entry if they have the ID (security by obscurity for now, 
+        // as we don't have customer auth)
+        allow read: if isRestaurantOwner(restaurantId) || true; 
+        
+        // Anyone can join the queue
+        allow create: if isValidQueueEntry(request.resource.data);
+        
+        // Only the restaurant owner can update the status
+        allow update: if isRestaurantOwner(restaurantId) && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) &&
+                        request.resource.data.status in ['called', 'completed'];
+      }
+    }
+  }
+}

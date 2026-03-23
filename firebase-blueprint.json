@@ -1,0 +1,39 @@
+{
+  "entities": {
+    "Restaurant": {
+      "title": "Restaurant",
+      "description": "A restaurant that uses the virtual queue system.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The name of the restaurant." },
+        "address": { "type": "string", "description": "The address of the restaurant." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the restaurant was registered." }
+      },
+      "required": ["name", "address", "createdAt"]
+    },
+    "QueueEntry": {
+      "title": "Queue Entry",
+      "description": "A customer entry in a restaurant's queue.",
+      "type": "object",
+      "properties": {
+        "restaurantId": { "type": "string", "description": "The ID of the restaurant." },
+        "customerName": { "type": "string", "description": "The name of the customer." },
+        "customerPhone": { "type": "string", "description": "The phone number of the customer." },
+        "tokenNumber": { "type": "integer", "description": "The token number assigned to the customer." },
+        "status": { "type": "string", "enum": ["waiting", "called", "completed"], "description": "The status of the customer in the queue." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the customer joined the queue." }
+      },
+      "required": ["restaurantId", "customerName", "customerPhone", "tokenNumber", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/restaurants/{restaurantId}": {
+      "schema": "Restaurant",
+      "description": "Collection of registered restaurants."
+    },
+    "/restaurants/{restaurantId}/queue/{queueId}": {
+      "schema": "QueueEntry",
+      "description": "Subcollection of queue entries for a specific restaurant."
+    }
+  }
+}
