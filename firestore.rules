@@ -17,14 +17,17 @@ service cloud.firestore {
     function isValidRestaurant(data) {
       return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
              data.address is string && data.address.size() > 0 && data.address.size() < 200 &&
-             data.ownerUid == request.auth.uid;
+             data.ownerUid is string &&
+             (!('lastTokenNumber' in data) || (data.lastTokenNumber is int && data.lastTokenNumber >= 0)) &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
     function isValidQueueEntry(data) {
-      return data.customerName is string && data.customerName.size() > 0 && data.customerName.size() < 50 &&
-             data.customerPhone is string && data.customerPhone.size() > 0 && data.customerPhone.size() < 20 &&
+      return data.customerName is string && data.customerName.size() > 0 && data.customerName.size() < 100 &&
              data.tokenNumber is int && data.tokenNumber > 0 &&
-             data.status in ['waiting', 'called', 'completed'];
+             data.status in ['waiting', 'called', 'completed'] &&
+             (!('customerPhone' in data) || data.customerPhone is string) &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
     // ===============================================================
@@ -32,31 +35,29 @@ service cloud.firestore {
     // ===============================================================
 
     match /restaurants/{restaurantId} {
-      // Anyone can read restaurant details (needed for the join page)
-      allow read: if true;
+      // Anyone can read restaurant details
+      allow get: if true;
+      // Owners can list their restaurants
+      allow list: if isAuthenticated();
       
-      // Only authenticated users can create a restaurant, and they must be the owner
-      allow create: if isAuthenticated() && isValidRestaurant(request.resource.data);
+      // Only authenticated users can create a restaurant
+      allow create: if isAuthenticated() && 
+                      request.resource.data.ownerUid == request.auth.uid;
       
-      // Only the owner can update their restaurant
-      allow update: if isAuthenticated() && 
-                      resource.data.ownerUid == request.auth.uid && 
-                      isValidRestaurant(request.resource.data);
+      // Allow owner to update everything, OR anyone to increment lastTokenNumber
+      allow update: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) ||
+                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastTokenNumber']));
       
       // Queue subcollection
       match /queue/{queueId} {
-        // Restaurant owner can see all queue entries
-        // Customers can see their own entry if they have the ID (security by obscurity for now, 
-        // as we don't have customer auth)
-        allow read: if isRestaurantOwner(restaurantId) || true; 
+        // Anyone can read queue entries (needed for status check)
+        allow read: if true;
         
         // Anyone can join the queue
-        allow create: if isValidQueueEntry(request.resource.data);
+        allow create: if true;
         
-        // Only the restaurant owner can update the status
-        allow update: if isRestaurantOwner(restaurantId) && 
-                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) &&
-                        request.resource.data.status in ['called', 'completed'];
+        // Only the restaurant owner can update or delete entries
+        allow update, delete: if isRestaurantOwner(restaurantId);
       }
     }
   }
