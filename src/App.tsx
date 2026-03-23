@@ -5,6 +5,7 @@ import {
   Route,
   useNavigate,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import {
@@ -70,26 +71,26 @@ const Home = ({ user }: { user: User | null }) => {
     };
 
     return (
-      <div className="max-w-4xl mx-auto mt-20 px-6 text-center">
+      <div className="max-w-4xl mx-auto mt-10 sm:mt-20 px-4 sm:px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="bg-indigo-600 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl shadow-indigo-200">
-            <Clock className="text-white w-10 h-10" />
+          <div className="bg-indigo-600 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-xl shadow-indigo-200">
+            <Clock className="text-white w-8 h-8 sm:w-10 sm:h-10" />
           </div>
-          <h1 className="text-5xl sm:text-6xl font-black text-gray-900 mb-6 tracking-tight">
+          <h1 className="text-4xl sm:text-6xl font-black text-gray-900 mb-4 sm:mb-6 tracking-tight">
             Manage your queue <br />
             <span className="text-indigo-600">effortlessly.</span>
           </h1>
-          <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="text-lg sm:text-xl text-gray-500 mb-8 sm:mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
             The modern way to handle customer waitlists. Join thousands of
             restaurants providing a seamless waiting experience.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={login}
-              className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center gap-3"
+              className="w-full sm:w-auto bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-3"
             >
               <LayoutDashboard className="w-5 h-5" /> Owner Login
             </button>
@@ -103,6 +104,38 @@ const Home = ({ user }: { user: User | null }) => {
   }
 
   return null;
+};
+
+const AppContent = ({
+  user,
+  handleLogout,
+}: {
+  user: User | null;
+  handleLogout: () => void;
+}) => {
+  const location = useLocation();
+  const isJoinPage = location.pathname === "/join";
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans selection:bg-indigo-100 selection:text-indigo-900">
+      {!isJoinPage && <Navbar user={user} onLogout={handleLogout} />}
+      <Routes>
+        <Route path="/" element={<Home user={user} />} />
+        <Route
+          path="/register"
+          element={
+            user ? <RestaurantRegistration /> : <Navigate to="/" replace />
+          }
+        />
+        <Route
+          path="/dashboard/:restaurantId"
+          element={user ? <RestaurantDashboard /> : <Navigate to="/" replace />}
+        />
+        <Route path="/join" element={<CustomerJoin />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
+  );
 };
 
 const App = () => {
@@ -131,26 +164,7 @@ const App = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 font-sans selection:bg-indigo-100 selection:text-indigo-900">
-        <Navbar user={user} onLogout={handleLogout} />
-        <Routes>
-          <Route path="/" element={<Home user={user} />} />
-          <Route
-            path="/register"
-            element={
-              user ? <RestaurantRegistration /> : <Navigate to="/" replace />
-            }
-          />
-          <Route
-            path="/dashboard/:restaurantId"
-            element={
-              user ? <RestaurantDashboard /> : <Navigate to="/" replace />
-            }
-          />
-          <Route path="/join" element={<CustomerJoin />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
+      <AppContent user={user} handleLogout={handleLogout} />
     </Router>
   );
 };
