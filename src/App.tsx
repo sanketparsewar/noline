@@ -287,7 +287,11 @@ const RestaurantDashboard = ({ restaurantId }: { restaurantId: string }) => {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [queue, setQueue] = useState<QueueEntry[]>([]);
   const [showQR, setShowQR] = useState(false);
-  const [filterDate, setFilterDate] = useState("");
+  const [filterDate, setFilterDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 20;
 
   useEffect(() => {
     setRestaurant(null);
@@ -385,6 +389,23 @@ const RestaurantDashboard = ({ restaurantId }: { restaurantId: string }) => {
 
   const activeQueue = queue.filter((e) => e.status !== "completed");
   const historyQueue = queue.filter((e) => e.status === "completed");
+
+  const filteredHistory = historyQueue
+    .filter((entry) => {
+      if (!filterDate) return true;
+      const entryDate = entry.createdAt?.toDate
+        ? entry.createdAt.toDate()
+        : new Date();
+      return entryDate.toISOString().split("T")[0] === filterDate;
+    })
+    .slice()
+    .reverse();
+
+  const totalPages = Math.ceil(filteredHistory.length / recordsPerPage);
+  const paginatedHistory = filteredHistory.slice(
+    (currentPage - 1) * recordsPerPage,
+    currentPage * recordsPerPage,
+  );
 
   return (
     <div className="max-w-7xl mx-auto mt-8 px-6 pb-12">
@@ -547,7 +568,10 @@ const RestaurantDashboard = ({ restaurantId }: { restaurantId: string }) => {
                   <input
                     type="date"
                     value={filterDate}
-                    onChange={(e) => setFilterDate(e.target.value)}
+                    onChange={(e) => {
+                      setFilterDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
                     className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
@@ -579,69 +603,101 @@ const RestaurantDashboard = ({ restaurantId }: { restaurantId: string }) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {historyQueue
-                    .filter((entry) => {
-                      if (!filterDate) return true;
-                      const entryDate = entry.createdAt?.toDate
-                        ? entry.createdAt.toDate()
-                        : new Date();
-                      return (
-                        entryDate.toISOString().split("T")[0] === filterDate
-                      );
-                    })
-                    .slice()
-                    .reverse()
-                    .map((entry) => {
-                      const date = entry.createdAt?.toDate
-                        ? entry.createdAt.toDate()
-                        : new Date();
-                      return (
-                        <tr
-                          key={entry.id}
-                          className="hover:bg-gray-50/50 transition-colors"
-                        >
-                          <td className="px-6 py-4">
-                            <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center font-bold text-indigo-600 text-sm border border-indigo-100">
-                              {entry.tokenNumber}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="font-bold text-gray-900">
-                              {entry.customerName}
-                            </div>
-                            <div className="text-xs text-gray-400">
-                              {entry.customerPhone}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-600 font-medium">
-                            {date.toLocaleDateString([], {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-600 font-medium">
-                            {date.toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  {historyQueue.length === 0 && (
+                  {paginatedHistory.map((entry) => {
+                    const date = entry.createdAt?.toDate
+                      ? entry.createdAt.toDate()
+                      : new Date();
+                    return (
+                      <tr
+                        key={entry.id}
+                        className="hover:bg-gray-50/50 transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center font-bold text-indigo-600 text-sm border border-indigo-100">
+                            {entry.tokenNumber}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-gray-900">
+                            {entry.customerName}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {entry.customerPhone}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600 font-medium">
+                          {date.toLocaleDateString([], {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600 font-medium">
+                          {date.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {filteredHistory.length === 0 && (
                     <tr>
                       <td
                         colSpan={4}
                         className="px-6 py-12 text-center text-gray-400 italic text-sm"
                       >
-                        No completed entries yet.
+                        No completed entries for this date.
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-6">
+                <p className="text-sm text-gray-500 font-medium">
+                  Showing{" "}
+                  <span className="text-gray-900">
+                    {(currentPage - 1) * recordsPerPage + 1}
+                  </span>{" "}
+                  to{" "}
+                  <span className="text-gray-900">
+                    {Math.min(
+                      currentPage * recordsPerPage,
+                      filteredHistory.length,
+                    )}
+                  </span>{" "}
+                  of{" "}
+                  <span className="text-gray-900">
+                    {filteredHistory.length}
+                  </span>{" "}
+                  results
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-all"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-all"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
