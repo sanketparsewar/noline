@@ -35,6 +35,7 @@ export interface Restaurant {
   ownerUid: string;
   lastTokenNumber: number;
   lastTokenDate?: string; // Format: YYYY-MM-DD
+  averageWaitTimePerCustomer: number;
   createdAt: any;
 }
 
@@ -42,6 +43,7 @@ export interface QueueEntry {
   id: string;
   customerName: string;
   customerPhone: string;
+  members: string;
   tokenNumber: number;
   status: "waiting" | "called" | "completed";
   createdAt: any;

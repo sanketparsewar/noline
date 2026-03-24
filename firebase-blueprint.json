@@ -10,9 +10,10 @@
         "ownerUid": { "type": "string", "description": "The UID of the restaurant owner." },
         "lastTokenNumber": { "type": "integer", "description": "The last token number assigned today." },
         "lastTokenDate": { "type": "string", "description": "The date when the last token was assigned (YYYY-MM-DD)." },
+        "averageWaitTimePerCustomer": { "type": "integer", "description": "The estimated wait time per customer in minutes." },
         "createdAt": { "type": "string", "format": "date-time", "description": "When the restaurant was registered." }
       },
-      "required": ["name", "address", "ownerUid", "lastTokenNumber", "lastTokenDate", "createdAt"]
+      "required": ["name", "address", "ownerUid", "lastTokenNumber", "lastTokenDate", "averageWaitTimePerCustomer", "createdAt"]
     },
     "QueueEntry": {
       "title": "Queue Entry",
@@ -22,6 +23,7 @@
         "restaurantId": { "type": "string", "description": "The ID of the restaurant." },
         "customerName": { "type": "string", "description": "The name of the customer." },
         "customerPhone": { "type": "string", "description": "The phone number of the customer." },
+        "members": { "type": "string", "description": "The number of members in the group (e.g., '1', '2', ..., '9+')." },
         "tokenNumber": { "type": "integer", "description": "The token number assigned to the customer." },
         "status": { "type": "string", "enum": ["waiting", "called", "completed"], "description": "The status of the customer in the queue." },
         "createdAt": { "type": "string", "format": "date-time", "description": "When the customer joined the queue." }

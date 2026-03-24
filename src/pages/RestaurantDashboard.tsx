@@ -131,11 +131,11 @@ const RestaurantDashboard = () => {
 
     const csvContent =
       "data:text/csv;charset=utf-8," +
-      "Token,Name,Phone,Date,Time\n" +
+      "Token,Name,Phone,Members,Date,Time\n" +
       filtered
         .map((e) => {
           const date = e.createdAt?.toDate ? e.createdAt.toDate() : new Date();
-          return `${e.tokenNumber},${e.customerName},${e.customerPhone},${date.toLocaleDateString()},${date.toLocaleTimeString()}`;
+          return `${e.tokenNumber},${e.customerName},${e.customerPhone},${e.members || "1"},${date.toLocaleDateString()},${date.toLocaleTimeString()}`;
         })
         .join("\n");
 
@@ -548,7 +548,7 @@ const RestaurantDashboard = () => {
                       )}
                       <div className="flex items-center gap-3 sm:gap-5 relative z-10">
                         <div
-                          className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-black text-lg sm:text-2xl shadow-sm transition-all ${
+                          className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-black text-lg sm:text-2xl shadow-sm transition-all shrink-0 ${
                             entry.status === "called"
                               ? "bg-amber-500 text-white ring-4 ring-amber-100"
                               : "bg-slate-50 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-105"
@@ -557,9 +557,17 @@ const RestaurantDashboard = () => {
                           {entry.tokenNumber}
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-bold text-slate-900 text-base sm:text-xl truncate leading-tight">
-                            {entry.customerName}
-                          </h4>
+                          <div className="flex items-center gap-1 flex-wrap">
+                            <h4 className="font-bold text-slate-900 text-base sm:text-xl truncate leading-tight">
+                              {entry.customerName}
+                            </h4>
+                            <div className="flex items-center gap-1 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100 shrink-0">
+                              <span className="text-[10px] sm:text-xs font-black text-indigo-600">
+                                {entry.members || "1"}
+                              </span>
+                              <Users className="w-3 h-3 text-indigo-400" />
+                            </div>
+                          </div>
                           <p className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5 truncate">
                             {entry.customerPhone}
                           </p>
@@ -687,10 +695,18 @@ const RestaurantDashboard = () => {
                             </div>
                           </td>
                           <td className="px-4 sm:px-8 py-4 sm:py-6">
-                            <div className="font-bold text-slate-900 text-sm sm:text-base truncate max-w-25 sm:max-w-none">
-                              {entry.customerName}
+                            <div className="flex items-center gap-1 flex-wrap">
+                              <div className="font-bold text-slate-900 text-sm sm:text-base truncate max-w-[100px] sm:max-w-none">
+                                {entry.customerName}
+                              </div>
+                              <div className="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded-md shrink-0 border border-slate-100">
+                                <span className="text-[10px] font-bold text-slate-500">
+                                  {entry.members || "1"}
+                                </span>
+                                <Users className="w-2.5 h-2.5 text-slate-400" />
+                              </div>
                             </div>
-                            <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5 truncate max-w-25 sm:max-w-none">
+                            <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5 truncate max-w-[100px] sm:max-w-none">
                               {entry.customerPhone}
                             </div>
                           </td>

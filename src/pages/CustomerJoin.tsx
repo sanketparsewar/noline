@@ -20,6 +20,7 @@ const CustomerJoin = () => {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [members, setMembers] = useState("1");
   const [token, setToken] = useState<QueueEntry | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -130,6 +131,7 @@ const CustomerJoin = () => {
         transaction.set(queueRef, {
           customerName: name,
           customerPhone: phone,
+          members: members,
           tokenNumber: nextToken,
           status: "waiting",
           createdAt: serverTimestamp(),
@@ -252,7 +254,7 @@ const CustomerJoin = () => {
             </p>
 
             <div
-              className={`rounded-4xl p-6 sm:p-8 mb-6 transition-all transform ${
+              className={`rounded-[2rem] p-6 sm:p-8 mb-6 transition-all transform ${
                 isCalled
                   ? "bg-amber-600 text-white scale-110 shadow-xl shadow-amber-200"
                   : isCompleted
@@ -386,6 +388,23 @@ const CustomerJoin = () => {
               pattern="\d{10}"
               title="Please enter exactly 10 digits"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Number of Members
+            </label>
+            <select
+              value={members}
+              onChange={(e) => setMembers(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all bg-white"
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                <option key={num} value={num.toString()}>
+                  {num}
+                </option>
+              ))}
+              <option value="9+">9+</option>
+            </select>
           </div>
           <button
             type="submit"
