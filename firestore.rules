@@ -36,7 +36,7 @@ service cloud.firestore {
     // ===============================================================
 
     match /restaurants/{restaurantId} {
-      // Anyone can read restaurant details
+      // Allow anyone to get restaurant details
       allow get: if true;
       // Owners can list their restaurants
       allow list: if isAuthenticated();
@@ -47,10 +47,10 @@ service cloud.firestore {
                       isValidRestaurant(request.resource.data);
       
       // Allow owner to update everything, OR anyone to increment lastTokenNumber and lastTokenDate
-      allow update: if isValidRestaurant(request.resource.data) && (
-                      (isAuthenticated() && resource.data.ownerUid == request.auth.uid) ||
-                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastTokenNumber', 'lastTokenDate']))
-                    );
+      allow update: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid && isValidRestaurant(request.resource.data)) ||
+                    (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastTokenNumber', 'lastTokenDate']) &&
+                     request.resource.data.lastTokenNumber is int &&
+                     request.resource.data.lastTokenDate is string);
       
       // Queue subcollection
       match /queue/{queueId} {

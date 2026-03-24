@@ -64,9 +64,25 @@ const CustomerJoin = () => {
   useEffect(() => {
     if (!restaurantId) return;
     const fetchRestaurant = async () => {
-      const docSnap = await getDoc(doc(db, "restaurants", restaurantId));
-      if (docSnap.exists()) {
-        setRestaurant({ id: docSnap.id, ...docSnap.data() } as Restaurant);
+      try {
+        const docSnap = await getDoc(doc(db, "restaurants", restaurantId));
+        if (docSnap.exists()) {
+          setRestaurant({ id: docSnap.id, ...docSnap.data() } as Restaurant);
+        } else {
+          setError("Restaurant not found. Please scan a valid QR code.");
+        }
+      } catch (err) {
+        console.error("Error fetching restaurant:", err);
+        setError(
+          "Failed to load restaurant details. Please check your connection.",
+        );
+        try {
+          handleFirestoreError(
+            err,
+            OperationType.GET,
+            `restaurants/${restaurantId}`,
+          );
+        } catch (e) {}
       }
     };
     fetchRestaurant();

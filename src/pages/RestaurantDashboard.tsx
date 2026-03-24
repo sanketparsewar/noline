@@ -166,7 +166,20 @@ const RestaurantDashboard = () => {
     setExportEndDate(yStr);
   };
 
-  const joinUrl = `${import.meta.env.VITE_QR_CODE_URL}/join?restaurantId=${restaurantId}`;
+  const baseUrl = (import.meta as any).env.VITE_QR_CODE_URL;
+  const joinUrl = `${baseUrl}/join?restaurantId=${restaurantId}`;
+
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(joinUrl);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy!", err);
+    }
+  };
 
   if (!restaurant) {
     return (
@@ -331,12 +344,42 @@ const RestaurantDashboard = () => {
                   size={window.innerWidth < 640 ? 180 : 240}
                 />
               </div>
-              <button
-                onClick={downloadQRCode}
-                className="flex items-center gap-2 bg-indigo-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 mb-6"
-              >
-                <Download className="w-5 h-5" /> Download QR for Print
-              </button>
+
+              {/* URL Warning */}
+              {baseUrl.includes("ais-dev-") && (
+                <div className="mb-6 p-4 bg-amber-50 border border-amber-100 rounded-2xl text-amber-700 text-sm font-medium max-w-sm">
+                  <p className="flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    <span>
+                      Note: You are using the <strong>Private Dev URL</strong>.
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs opacity-80">
+                    To test on other phones, please use the{" "}
+                    <strong>Shared App URL</strong> from AI Studio to avoid 403
+                    errors.
+                  </p>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <button
+                  onClick={downloadQRCode}
+                  className="flex items-center gap-2 bg-indigo-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+                >
+                  <Download className="w-5 h-5" /> Download QR
+                </button>
+                <button
+                  onClick={copyToClipboard}
+                  className={`flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold transition-all shadow-sm border ${
+                    copySuccess
+                      ? "bg-green-50 border-green-200 text-green-600"
+                      : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  {copySuccess ? "Copied!" : "Copy Link"}
+                </button>
+              </div>
               <p className="text-sm text-gray-500 max-w-sm leading-relaxed px-4">
                 Place this QR code at your reception counter for customers to
                 join the queue.
