@@ -700,7 +700,7 @@ const RestaurantDashboard = () => {
                           </td>
                           <td className="px-4 sm:px-8 py-4 sm:py-6">
                             <div className="flex items-center gap-1 flex-wrap">
-                              <div className="font-bold text-slate-900 text-sm sm:text-base truncate max-w-[100px] sm:max-w-none">
+                              <div className="font-bold text-slate-900 text-sm sm:text-base truncate max-w-25 sm:max-w-none">
                                 {entry.customerName}
                               </div>
                               <div className="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded-md shrink-0 border border-slate-100">
@@ -710,7 +710,7 @@ const RestaurantDashboard = () => {
                                 <Users className="w-2.5 h-2.5 text-slate-400" />
                               </div>
                             </div>
-                            <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5 truncate max-w-[100px] sm:max-w-none">
+                            <div className="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5 truncate max-w-25 sm:max-w-none">
                               {entry.customerPhone}
                             </div>
                           </td>

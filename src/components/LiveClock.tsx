@@ -10,7 +10,7 @@ const LiveClock = () => {
   }, []);
 
   return (
-    <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 min-w-[240px]">
+    <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 min-w-60">
       <div className="bg-indigo-50 p-3 rounded-xl">
         <Clock className="w-6 h-6 text-indigo-600" />
       </div>
