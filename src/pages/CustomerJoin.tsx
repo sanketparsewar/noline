@@ -371,6 +371,8 @@ const CustomerJoin = () => {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
+              maxLength={18}
+              max={18}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
               placeholder="Enter your name"
             />
