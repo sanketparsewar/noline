@@ -396,10 +396,10 @@ const CustomerJoin = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Number of Members
             </label>
-            <selecte
+            <select
               value={members}
               onChange={(e) => setMembers(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all bg-white"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white appearance-none"
             >
               {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
                 <option key={num} value={num.toString()}>
@@ -407,7 +407,7 @@ const CustomerJoin = () => {
                 </option>
               ))}
               <option value="9+">9+</option>
-            </selecte>
+            </select>
           </div>
           <button
             type="submit"
