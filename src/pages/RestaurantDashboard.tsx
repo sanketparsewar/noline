@@ -166,8 +166,9 @@ const RestaurantDashboard = () => {
     setExportEndDate(yStr);
   };
 
-  const baseUrl = (import.meta as any).env.VITE_QR_CODE_URL;
-  const joinUrl = `${baseUrl}/join?restaurantId=${restaurantId}`;
+  const baseUrl =
+    (import.meta as any).env.VITE_QR_CODE_URL || window.location.origin;
+  const joinUrl = `${baseUrl}/#/join?restaurantId=${restaurantId}`;
 
   const [copySuccess, setCopySuccess] = useState(false);
 
