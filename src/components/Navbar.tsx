@@ -16,7 +16,7 @@ const Navbar = ({
         <Clock className="text-white w-5 h-5" />
       </div>
       <span className="font-bold text-xl tracking-tight text-gray-900">
-        QueueFlow
+        Scan2Queue
       </span>
     </Link>
     {user && (

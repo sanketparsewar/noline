@@ -443,7 +443,7 @@ const Home = ({
                     <Clock className="text-white w-5 h-5" />
                   </div>
                   <span className="text-2xl font-black tracking-tighter text-gray-900">
-                    QueueMaster
+                    Scan2Queue
                   </span>
                 </div>
                 <p className="text-gray-500 max-w-sm mb-8 leading-relaxed">
@@ -540,7 +540,7 @@ const Home = ({
             </div>
             <div className="pt-12 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-6">
               <p className="text-gray-400 font-medium text-sm">
-                © 2026 QueueMaster Inc. All rights reserved.
+                © 2026 Daxabit. All rights reserved.
               </p>
               <motion.div
                 animate={{ scale: [1, 1.1, 1] }}
