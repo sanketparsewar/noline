@@ -40,10 +40,20 @@ import CustomerJoin from "./pages/CustomerJoin";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { IconType } from "react-icons/lib";
 
-const Home = ({ user }: { user: User | null }) => {
+const Home = ({
+  user,
+  onMockLogin,
+}: {
+  user: User | null;
+  onMockLogin: () => void;
+}) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const socialIcons: IconType[] = [FaInstagram, FaLinkedin, FaFacebook];
+
+  const isDev =
+    (import.meta as any).env.DEV ||
+    (import.meta as any).env.VITE_DEV === "development";
 
   useEffect(() => {
     if (!user) {
@@ -146,6 +156,14 @@ const Home = ({ user }: { user: User | null }) => {
                 <LayoutDashboard className="w-5 h-5" /> Get Started Now
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
+              {isDev && (
+                <button
+                  onClick={onMockLogin}
+                  className="w-full sm:w-auto bg-white text-indigo-600 border-2 border-indigo-600 px-10 py-4 rounded-2xl font-bold text-lg hover:bg-indigo-50 transition-all shadow-lg shadow-indigo-50 flex items-center justify-center gap-3 group"
+                >
+                  <Users className="w-5 h-5" /> Login as Test User
+                </button>
+              )}
               <div className="flex items-center gap-2 text-gray-400 font-medium px-6 py-4">
                 <CheckCircle2 className="w-5 h-5 text-green-500" /> No apps, no
                 setup, no hassle
@@ -546,9 +564,11 @@ const Home = ({ user }: { user: User | null }) => {
 const AppContent = ({
   user,
   handleLogout,
+  onMockLogin,
 }: {
   user: User | null;
   handleLogout: () => void;
+  onMockLogin: () => void;
 }) => {
   const location = useLocation();
   const isJoinPage = location.pathname === "/join";
@@ -557,16 +577,29 @@ const AppContent = ({
     <div className="min-h-screen bg-gray-50 font-sans selection:bg-indigo-100 selection:text-indigo-900">
       {!isJoinPage && <Navbar user={user} onLogout={handleLogout} />}
       <Routes>
-        <Route path="/" element={<Home user={user} />} />
+        <Route
+          path="/"
+          element={<Home user={user} onMockLogin={onMockLogin} />}
+        />
         <Route
           path="/register"
           element={
-            user ? <RestaurantRegistration /> : <Navigate to="/" replace />
+            user ? (
+              <RestaurantRegistration user={user} />
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
         <Route
           path="/dashboard/:restaurantId"
-          element={user ? <RestaurantDashboard /> : <Navigate to="/" replace />}
+          element={
+            user ? (
+              <RestaurantDashboard user={user} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
         <Route path="/join" element={<CustomerJoin />} />
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -581,14 +614,38 @@ const App = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+      if (user) {
+        setUser(user);
+      } else {
+        // Check if we have a mock user in localStorage
+        const mockUserStr = localStorage.getItem("mockUser");
+        if (mockUserStr) {
+          setUser(JSON.parse(mockUserStr));
+        } else {
+          setUser(null);
+        }
+      }
       setAuthLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("mockUser");
     signOut(auth);
+    setUser(null);
+  };
+
+  const handleMockLogin = () => {
+    const mockUser = {
+      uid: "test-user-id-123",
+      email: "test@example.com",
+      displayName: "Test User",
+      photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=test",
+    } as User;
+
+    localStorage.setItem("mockUser", JSON.stringify(mockUser));
+    setUser(mockUser);
   };
 
   if (authLoading) {
@@ -601,7 +658,11 @@ const App = () => {
 
   return (
     <Router>
-      <AppContent user={user} handleLogout={handleLogout} />
+      <AppContent
+        user={user}
+        handleLogout={handleLogout}
+        onMockLogin={handleMockLogin}
+      />
     </Router>
   );
 };

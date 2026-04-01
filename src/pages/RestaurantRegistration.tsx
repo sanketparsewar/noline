@@ -1,27 +1,30 @@
 import React, { useState } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { User } from "firebase/auth";
 import { db, auth } from "../firebase";
 import { Store, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 
-const RestaurantRegistration = () => {
+const RestaurantRegistration = ({ user }: { user: User | null }) => {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [waitTime, setWaitTime] = useState("10");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth.currentUser) return;
+    if (!user) return;
     setLoading(true);
     try {
       const docRef = await addDoc(collection(db, "restaurants"), {
         name,
         address,
-        ownerUid: auth.currentUser.uid,
+        ownerUid: user.uid,
         lastTokenNumber: 0,
         lastTokenDate: new Date().toISOString().split("T")[0],
+        averageWaitTimePerCustomer: parseInt(waitTime) || 10,
         createdAt: serverTimestamp(),
       });
       navigate(`/dashboard/${docRef.id}`);
@@ -73,6 +76,21 @@ const RestaurantRegistration = () => {
               onChange={(e) => setAddress(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
               placeholder="e.g. 123 Main St, City"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Avg. Wait Time per Customer (mins)
+            </label>
+            <input
+              type="number"
+              required
+              min="1"
+              max="120"
+              value={waitTime}
+              onChange={(e) => setWaitTime(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+              placeholder="e.g. 10"
             />
           </div>
           <button

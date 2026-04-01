@@ -329,7 +329,7 @@ const RestaurantDashboard = () => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            <div className="flex items-center justify-end gap-2 sm:gap-4">
               <button
                 onClick={() => setShowQR(!showQR)}
                 className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold transition-all shadow-sm border ${
@@ -338,20 +338,19 @@ const RestaurantDashboard = () => {
                     : "bg-white border-slate-200 text-slate-700 hover:border-indigo-200 hover:text-indigo-600"
                 }`}
               >
-                <QrCode className="w-4 h-4 sm:w-5 " />{" "}
+                <QrCode className="w-4 h-4  sm:w-5 " />{" "}
                 {showQR ? "Hide QR" : "Show QR"}
               </button>
-              <div className="h-8 sm:h-10 w-px bg-slate-100 hidden lg:block mx-2"></div>
-              <LiveClock />
+              {/* <LiveClock /> */}
             </div>
           </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-10">
+        <div className="grid grid-cols-4 md:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-10">
           {[
             {
-              label: "Total Today",
+              label: "Total",
               value: queue.filter((e) => {
                 const d = e.createdAt?.toDate
                   ? e.createdAt.toDate()
@@ -397,11 +396,11 @@ const RestaurantDashboard = () => {
           ].map((stat, i) => (
             <div
               key={i}
-              className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm"
+              className="bg-white rounded-2xl p-3 flex flex-col items-center justify-center shadow-sm"
             >
-              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+              <div className="items-center flex-row gap-2 sm:gap-3 mb-2 sm:mb-3">
                 <div
-                  className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl ${stat.bgColor} ${stat.textColor}`}
+                  className={`p-1.5 sm:p-2 flex items-center justify-center rounded-lg sm:rounded-xl ${stat.bgColor} ${stat.textColor}`}
                 >
                   <stat.icon className="w-3.5 h-3.5 sm:w-4 " />
                 </div>
