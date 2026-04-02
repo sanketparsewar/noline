@@ -72,7 +72,7 @@ const Subscription = () => {
   const handlePayment = async () => {
     if (!restaurantId || !restaurant) return;
 
-    const razorpayKey = (import.meta as any).env.VITE_RAZORPAY_KEY_ID;
+    const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
     if (!razorpayKey) {
       alert(
@@ -84,8 +84,9 @@ const Subscription = () => {
     setProcessing(true);
 
     try {
+      const appUrl = import.meta.env.VITE_APP_URL || "";
       // 1. Create order on the server
-      const orderResponse = await fetch("/api/razorpay/order", {
+      const orderResponse = await fetch(`${appUrl}/api/razorpay/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: 19900, currency: "INR" }),
@@ -106,15 +107,18 @@ const Subscription = () => {
         handler: async function (response: any) {
           // 3. Verify payment on the server
           try {
-            const verifyResponse = await fetch("/api/razorpay/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
+            const verifyResponse = await fetch(
+              `${appUrl}/api/razorpay/verify`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              },
+            );
 
             if (!verifyResponse.ok)
               throw new Error("Payment verification failed");
