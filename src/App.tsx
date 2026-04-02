@@ -56,31 +56,39 @@ const Home = ({
     (import.meta as any).env.VITE_DEV === "development";
 
   useEffect(() => {
+    // If no user, we're not loading (show hero)
     if (!user) {
       setLoading(false);
       return;
     }
 
+    // If user is present, we are loading until the check finishes
+    setLoading(true);
+
     const checkRestaurant = async () => {
-      const q = query(
-        collection(db, "restaurants"),
-        where("ownerUid", "==", user.uid),
-        limit(1),
-      );
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const id = querySnapshot.docs[0].id;
-        navigate(`/dashboard/${id}`, { replace: true });
-      } else {
-        navigate("/register", { replace: true });
+      try {
+        const q = query(
+          collection(db, "restaurants"),
+          where("ownerUid", "==", user.uid),
+          limit(1),
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const id = querySnapshot.docs[0].id;
+          navigate(`/dashboard/${id}`, { replace: true });
+        } else {
+          navigate("/register", { replace: true });
+        }
+      } catch (error) {
+        console.error("Error checking restaurant:", error);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkRestaurant();
   }, [user, navigate]);
 
-  if (loading) {
+  if (loading || (user && loading)) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>

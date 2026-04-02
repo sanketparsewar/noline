@@ -1,5 +1,13 @@
-import React, { useState } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  query,
+  where,
+  getDocs,
+  limit,
+} from "firebase/firestore";
 import { User } from "firebase/auth";
 import { db, auth } from "../firebase";
 import { Store, ArrowRight } from "lucide-react";
@@ -10,8 +18,34 @@ const RestaurantRegistration = ({ user }: { user: User | null }) => {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [waitTime, setWaitTime] = useState("10");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const checkExistingRestaurant = async () => {
+      try {
+        const q = query(
+          collection(db, "restaurants"),
+          where("ownerUid", "==", user.uid),
+          limit(1),
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const id = querySnapshot.docs[0].id;
+          navigate(`/dashboard/${id}`, { replace: true });
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error checking existing restaurant:", error);
+        setLoading(false);
+      }
+    };
+
+    checkExistingRestaurant();
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,13 +61,21 @@ const RestaurantRegistration = ({ user }: { user: User | null }) => {
         averageWaitTimePerCustomer: parseInt(waitTime) || 10,
         createdAt: serverTimestamp(),
       });
-      navigate(`/dashboard/${docRef.id}`);
+      navigate(`/dashboard/${docRef.id}`, { replace: true });
     } catch (error) {
       console.error("Error registering restaurant:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 sm:px-6">
