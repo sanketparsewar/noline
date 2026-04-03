@@ -262,8 +262,9 @@ const Subscription = () => {
                   "Full Queue Management",
                   "QR Code Generation",
                   "Real-time Updates",
-                  "Basic Analytics",
-                  "7 Days Access",
+                  "Basic Analytics (today only)",
+                  "Unlimited Customer Entries",
+                  "No payment required",
                 ].map((feature, i) => (
                   <li
                     key={i}
@@ -348,10 +349,11 @@ const Subscription = () => {
               <ul className="space-y-4">
                 {[
                   "Everything in Trial",
-                  "Unlimited Queue Entries",
-                  "Advanced Export (CSV)",
-                  "Custom Branding",
-                  "30 Days Access",
+                  "Unlimited Customer Entries",
+                  "Analytics History",
+                  "CSV Export",
+                  "Data saved permanently",
+                  "Unlimited access for 30 days",
                 ].map((feature, i) => (
                   <li
                     key={i}
