@@ -155,33 +155,32 @@ const Home = ({
         icon: <Smartphone className="w-6 h-6 text-indigo-600" />,
         title: "No App Required",
         description:
-          "Customers join the queue by simply scanning a QR code. No downloads, no friction.",
+          "Customers scan a QR and instantly join the queue — no downloads, no friction.",
       },
       {
         icon: <Zap className="w-6 h-6 text-indigo-600" />,
         title: "Instant Queue Entry",
         description:
-          "Automate your waitlist entry. No more writing names on paper or shouting in the crowd.",
+          "Automate waitlist entry and eliminate manual errors during rush hours.",
       },
       {
         icon: <Users className="w-6 h-6 text-indigo-600" />,
-        title: "Staff Efficiency",
+        title: "Live Queue Visibility",
         description:
-          "Reduce front-of-house chaos and let your staff focus on providing great service.",
+          "Customers see their position and estimated wait time in real-time.",
       },
       {
         icon: <BarChart3 className="w-6 h-6 text-indigo-600" />,
-        title: "Crowd Management",
-        description:
-          "Easily manage waiting crowds with a digital dashboard that keeps everyone organized.",
+        title: "Increase Table Turnover",
+        description: "Serve more customers efficiently and reduce idle tables.",
       },
     ];
 
     const benefits = [
-      "Lessen manual work by automating queue entry",
-      "Easy to manage waiting crowds during peak hours",
-      "Improve table turnover with better queue visibility",
-      "Enhance customer satisfaction with a modern experience",
+      "Reduce waiting crowd at your entrance",
+      "Serve more customers during peak hours",
+      "Improve customer satisfaction instantly",
+      "Eliminate manual queue handling completely",
     ];
 
     return (
@@ -196,13 +195,16 @@ const Home = ({
             <div className="bg-indigo-600 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-xl shadow-indigo-200">
               <Clock className="text-white w-8 h-8 sm:w-10 sm:h-10" />
             </div>
-            <h1 className="text-4xl sm:text-7xl font-black text-gray-900 mb-4 sm:mb-6 tracking-tight leading-tight">
-              Manage your queue <br />
-              <span className="text-indigo-600">effortlessly.</span>
+            <h1 className="text-4xl sm:text-7xl font-black text-gray-900 mb-6 leading-tight">
+              Skip the waiting line. <br />
+              <span className="text-indigo-600">
+                Let customers join with a scan.
+              </span>
             </h1>
-            <p className="text-lg sm:text-xl text-gray-500 mb-8 sm:mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
-              The modern way to handle customer waitlists. Lessen manual work
-              and manage waiting crowds with ease.
+
+            <p className="text-lg sm:text-xl text-gray-500 mb-10 max-w-2xl mx-auto">
+              Customers scan your QR, join instantly, and get notified when it's
+              their turn — no crowd, no chaos.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
