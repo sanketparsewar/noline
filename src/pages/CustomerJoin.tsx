@@ -38,11 +38,6 @@ const CustomerJoin = () => {
           if (snapshot.exists()) {
             const data = snapshot.data() as any;
             setToken({ id: snapshot.id, ...data } as QueueEntry);
-
-            // Vibrate if called
-            if (data.status === "called" && "vibrate" in navigator) {
-              navigator.vibrate([200, 100, 200]);
-            }
           } else {
             // Entry might have been deleted or doesn't exist anymore
             localStorage.removeItem(`queue_entry_${restaurantId}`);
@@ -101,6 +96,7 @@ const CustomerJoin = () => {
     }
     try {
       await runTransaction(db, async (transaction) => {
+        // ... (rest of the transaction logic)
         const restaurantRef = doc(db, "restaurants", restaurantId);
         const restaurantDoc = await transaction.get(restaurantRef);
 
@@ -170,6 +166,16 @@ const CustomerJoin = () => {
       window.close();
     }
   };
+
+  // Handle notifications (Vibration) when called
+  useEffect(() => {
+    if (token?.status === "called") {
+      // Vibrate if supported
+      if ("vibrate" in navigator) {
+        navigator.vibrate([500, 200, 500, 200, 500]);
+      }
+    }
+  }, [token?.status]);
 
   if (!restaurantId) {
     return (
@@ -424,6 +430,9 @@ const CustomerJoin = () => {
               </>
             )}
           </button>
+          <p className="text-[10px] text-center text-slate-400 font-medium leading-relaxed">
+            Keep this page open to track your position in the queue.
+          </p>
         </form>
       </motion.div>
     </div>
