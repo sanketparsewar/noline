@@ -8,22 +8,32 @@ app.use(express.json());
 
 // Health check route
 app.get("/api/health", (req, res) => {
+  const isProd = process.env.NODE_ENV === "production";
   res.json({
     status: "ok",
+    mode: isProd ? "production" : "development",
     env: {
-      hasKeyId: !!process.env.VITE_RAZORPAY_KEY_ID,
-      hasKeySecret: !!process.env.RAZORPAY_KEY_SECRET,
+      hasTestKeyId: !!process.env.VITE_RAZORPAY_KEY_ID_TEST,
+      hasTestKeySecret: !!process.env.RAZORPAY_KEY_SECRET_TEST,
+      hasLiveKeyId: !!process.env.VITE_RAZORPAY_KEY_ID_LIVE,
+      hasLiveKeySecret: !!process.env.RAZORPAY_KEY_SECRET_LIVE,
     },
   });
 });
 
 const getRazorpay = () => {
-  const key_id = process.env.VITE_RAZORPAY_KEY_ID;
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+  const isProd = process.env.NODE_ENV === "production";
+  const key_id = isProd
+    ? process.env.VITE_RAZORPAY_KEY_ID_LIVE
+    : process.env.VITE_RAZORPAY_KEY_ID_TEST;
+  const key_secret = isProd
+    ? process.env.RAZORPAY_KEY_SECRET_LIVE
+    : process.env.RAZORPAY_KEY_SECRET_TEST;
 
   if (!key_id || !key_secret) {
+    const mode = isProd ? "LIVE" : "TEST";
     throw new Error(
-      "Razorpay Key ID or Key Secret is missing in environment variables.",
+      `Razorpay ${mode} Key ID or Key Secret is missing in environment variables.`,
     );
   }
 
@@ -60,10 +70,14 @@ app.post("/api/razorpay/verify", async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       req.body;
-    const secret = process.env.RAZORPAY_KEY_SECRET || "";
+    const isProd = process.env.NODE_ENV === "production";
+    const secret = isProd
+      ? process.env.RAZORPAY_KEY_SECRET_LIVE
+      : process.env.RAZORPAY_KEY_SECRET_TEST;
 
     if (!secret) {
-      throw new Error("RAZORPAY_KEY_SECRET is missing.");
+      const mode = isProd ? "LIVE" : "TEST";
+      throw new Error(`RAZORPAY_KEY_SECRET_${mode} is missing.`);
     }
 
     const generated_signature = crypto

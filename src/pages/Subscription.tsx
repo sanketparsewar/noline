@@ -77,11 +77,14 @@ const Subscription = () => {
   const handlePayment = async () => {
     if (!restaurantId || !restaurant) return;
 
-    const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+    const razorpayKey = import.meta.env.PROD
+      ? import.meta.env.VITE_RAZORPAY_KEY_ID_LIVE
+      : import.meta.env.VITE_RAZORPAY_KEY_ID_TEST;
 
     if (!razorpayKey) {
+      const mode = import.meta.env.PROD ? "LIVE" : "TEST";
       alert(
-        "Razorpay Key ID is missing. Please configure VITE_RAZORPAY_KEY_ID in the settings.",
+        `Razorpay ${mode} Key ID is missing. Please configure VITE_RAZORPAY_KEY_ID_${mode} in the settings.`,
       );
       return;
     }
@@ -95,7 +98,7 @@ const Subscription = () => {
       const orderResponse = await fetch(`${appUrl}/api/razorpay/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 19900, currency: "INR" }),
+        body: JSON.stringify({ amount: 100, currency: "INR" }),
       });
 
       if (!orderResponse.ok) throw new Error("Failed to create order");
