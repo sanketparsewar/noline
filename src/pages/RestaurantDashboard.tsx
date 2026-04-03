@@ -411,7 +411,7 @@ const RestaurantDashboard = ({ user }: { user: User | null }) => {
         </AnimatePresence>
 
         {/* Header Section */}
-        <div className="bg-white rounded-[2.5rem] p-6 sm:p-8 border border-slate-200/60 shadow-sm mb-8 relative overflow-hidden">
+        <div className="bg-white rounded-[2.5rem] p-6 sm:p-8 border border-slate-200/60 shadow-sm mb-2 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/50 rounded-full -mr-32 -mt-32 blur-3xl"></div>
           <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8">
             <div className="space-y-2 sm:space-y-3">
@@ -464,7 +464,7 @@ const RestaurantDashboard = ({ user }: { user: User | null }) => {
         {activeTab === "queue" ? (
           <>
             {/* Stats Overview */}
-            <div className="grid grid-cols-4 md:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-10">
+            <div className="grid grid-cols-4 md:grid-cols-4 gap-3 sm:gap-6 mb-2 sm:mb-2">
               {[
                 {
                   label: "Total",
@@ -908,7 +908,7 @@ const RestaurantDashboard = ({ user }: { user: User | null }) => {
           </>
         ) : (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-4xl p-4 sm:p-6 border border-slate-100 shadow-sm">
               <div className="flex items-center gap-3 mb-4 sm:mb-6">
                 <div className="bg-indigo-50 p-2 rounded-xl shrink-0">
                   <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
