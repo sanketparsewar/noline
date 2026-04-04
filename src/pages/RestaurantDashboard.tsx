@@ -337,7 +337,7 @@ const RestaurantDashboard = ({
   );
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
+    <div className="min-h-[screen] bg-linear-to-b from-slate-200 to-white">
       {/* Subscription Expiry Modal */}
       <AnimatePresence>
         {isSubscriptionExpired && (
@@ -376,7 +376,7 @@ const RestaurantDashboard = ({
         )}
       </AnimatePresence>
 
-      <div className="w-full pt-6 sm:pt-10 px-4 sm:px-6 lg:px-8 xl:px-16 2xl:px-24 pb-24">
+      <div className="w-full pt-4 sm:pt-2 px-4 sm:px-6 lg:px-8 xl:px-16 2xl:px-24 pb-4">
         {/* Export Modal */}
         <AnimatePresence>
           {showExportModal && (
@@ -473,16 +473,16 @@ const RestaurantDashboard = ({
         </AnimatePresence>
 
         {/* Header Section */}
-        <div className="bg-white rounded-[2.5rem] p-6 sm:p-8 border border-slate-200/60 shadow-sm mb-2 relative overflow-hidden">
+        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/60 shadow-sm mb-2 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/50 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-          <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8">
+          <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-2 sm:gap-3">
             <div className="space-y-2 sm:space-y-3">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="bg-indigo-600 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shadow-xl shadow-indigo-100 shrink-0">
                   <Store className="w-5 h-5 sm:w-6  text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+                  <h1 className="text-xl sm:text-4xl capitalize font-black text-slate-900 tracking-tight leading-tight">
                     {restaurant?.name}
                   </h1>
                   <p className="text-slate-500 flex items-center gap-1.5 sm:gap-2 font-medium text-xs sm:text-base mt-0.5 sm:mt-1">
@@ -493,7 +493,7 @@ const RestaurantDashboard = ({
               </div>
             </div>
             <div className="flex items-center justify-end flex-wrap gap-2 sm:gap-4">
-              <div className="flex bg-slate-100 p-1 rounded-xl mr-2">
+              <div className="flex bg-slate-100 p-1 rounded-xl">
                 <button
                   onClick={() => setActiveTab("queue")}
                   className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "queue" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
@@ -675,10 +675,10 @@ const RestaurantDashboard = ({
               </motion.div>
             )}
 
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
               {/* Current Queue Section */}
               <div className="xl:col-span-5 space-y-4 sm:space-y-5">
-                <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-4xl border border-slate-100 shadow-sm min-h-100 sm:min-h-140 flex flex-col">
+                <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-3xl border border-slate-100 shadow-sm min-h-100 sm:min-h-106 flex flex-col">
                   <div className="flex items-center justify-between mb-5 sm:mb-6">
                     <div className="flex items-center gap-3 sm:gap-4">
                       <div className="bg-indigo-600 p-2 sm:p-3 rounded-xl shadow-md">
@@ -807,7 +807,7 @@ const RestaurantDashboard = ({
                         <Clock className="w-5 h-5 sm:w-6 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
+                        <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">
                           Recent History
                         </h2>
                         <p className="text-slate-400 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] mt-0.5 sm:mt-1">

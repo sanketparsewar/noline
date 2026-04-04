@@ -215,19 +215,18 @@ const Subscription = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[screen] bg-linear-to-b from-slate-200 to-white py-3 px-4 sm:px-4 lg:px-8">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-4">
-              Start your queue system today
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+              Start Today
             </h1>
-            <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-              Select the best plan for your restaurant. Start with a free trial
-              or go premium for full features.
+            <p className="text-sm text-slate-500 font-medium max-w-2xl mx-auto">
+              Select the best plan for your restaurant.
             </p>
           </motion.div>
         </div>
@@ -241,9 +240,9 @@ const Subscription = () => {
             className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col"
           >
             <div className="mb-8">
-              <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mb-6">
+              {/* <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mb-6">
                 <Shield className="w-8 h-8 text-amber-600" />
-              </div>
+              </div> */}
               <h3 className="text-2xl font-black text-slate-900 mb-2">
                 Free Trial
               </h3>
@@ -329,15 +328,15 @@ const Subscription = () => {
             transition={{ delay: 0.2 }}
             className="bg-indigo-600 rounded-[2.5rem] p-8 shadow-2xl shadow-indigo-200 flex flex-col relative overflow-hidden"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+            {/* <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div> */}
 
             <div className="mb-8 relative z-10">
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">
+              {/* <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">
                 <Zap className="w-8 h-8 text-white" />
-              </div>
+              </div> */}
               <div className="flex items-center justify-between">
                 <h3 className="text-2xl font-black text-white mb-2">Premium</h3>
-                <span className="bg-white/20 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest backdrop-blur-md">
+                <span className="bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest backdrop-blur-md">
                   Most Popular
                 </span>
               </div>
@@ -400,7 +399,7 @@ const Subscription = () => {
           </motion.div>
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-10 text-center">
           <p className="text-slate-400 text-sm font-medium flex items-center justify-center gap-2">
             <Shield className="w-4 h-4" /> Secure payment powered by Razorpay
           </p>

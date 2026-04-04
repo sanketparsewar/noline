@@ -623,6 +623,8 @@ const AppContent = ({
 }) => {
   const location = useLocation();
   const isJoinPage = location.pathname === "/join";
+  const isDashboard = location.pathname.startsWith("/dashboard");
+  const isSubscription = location.pathname.startsWith("/subscription");
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans selection:bg-indigo-100 selection:text-indigo-900">
@@ -665,7 +667,7 @@ const AppContent = ({
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      {!isJoinPage && <Footer />}
+      {!isJoinPage && !isDashboard && !isSubscription && <Footer />}
     </div>
   );
 };
