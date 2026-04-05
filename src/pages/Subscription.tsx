@@ -162,6 +162,19 @@ const Subscription = () => {
         theme: {
           color: "#4f46e5",
         },
+        config: {
+          display: {
+            hide: [
+              { method: "netbanking" },
+              { method: "wallet" },
+              { method: "paylater" },
+              { method: "emi" },
+            ],
+            preferences: {
+              show_default_blocks: true,
+            },
+          },
+        },
       };
 
       const rzp = new (window as any).Razorpay(options);
