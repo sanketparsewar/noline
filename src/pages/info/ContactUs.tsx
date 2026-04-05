@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useRef } from "react";
 import { motion } from "motion/react";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
+import emailjs from "@emailjs/browser";
 import { brandName } from "@/src/utils/constants";
 
 const ContactUs = () => {
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  const sendEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    emailjs
+      .sendForm(
+        "service_ytcoog1", //YOUR_SERVICE_ID
+        "template_grxveeb", //YOUR_TEMPLATE_ID
+        formRef.current!,
+        "sFd-MUWVwKjX2J3gA", //YOUR_PUBLIC_KEY
+      )
+      .then(
+        () => {
+          alert("Email sent");
+          formRef.current?.reset();
+        },
+        (error) => {
+          console.error(error);
+          alert("Failed to send email");
+        },
+      );
+  };
+
   return (
     <div className="min-h-screen bg-white pt-4 pb-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -75,14 +100,16 @@ const ContactUs = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="bg-gray-50 p-8 sm:p-12 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-100/50"
           >
-            <form className="space-y-6">
+            <form ref={formRef} onSubmit={sendEmail} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
                     Full Name
                   </label>
                   <input
+                    name="name"
                     type="text"
+                    required
                     className="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl text-gray-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     placeholder="Enter your name"
                   />
@@ -92,7 +119,9 @@ const ContactUs = () => {
                     Email Address
                   </label>
                   <input
+                    name="email"
                     type="email"
+                    required
                     className="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl text-gray-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     placeholder="abc@example.com"
                   />
@@ -103,6 +132,7 @@ const ContactUs = () => {
                   Subject
                 </label>
                 <input
+                  name="title"
                   type="text"
                   className="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl text-gray-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                   placeholder="How can we help?"
@@ -113,13 +143,15 @@ const ContactUs = () => {
                   Message
                 </label>
                 <textarea
+                  name="message"
                   rows={4}
+                  required
                   className="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl text-gray-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none"
                   placeholder="Your message here..."
                 />
               </div>
               <button
-                type="button"
+                type="submit"
                 className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-3 group"
               >
                 Send Message{" "}
