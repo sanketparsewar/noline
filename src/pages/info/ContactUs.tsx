@@ -59,7 +59,7 @@ const ContactUs = () => {
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
                   Email Us
                 </h3>
-                <p className="text-gray-600 text-sm">support@{brandName}.com</p>
+                <p className="text-gray-600 text-sm">support@{brandName}.in</p>
                 <p className="text-gray-400 text-sm mt-1">
                   We respond within 24 hours.
                 </p>
