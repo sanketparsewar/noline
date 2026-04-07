@@ -1,5 +1,5 @@
 {
-  "name": "Scan2Queue",
+  "name": "QueueBuddy",
   "description": "A virtual queue management system for restaurants. Customers scan a QR code to join the queue and receive a real-time token.",
   "requestFramePermissions": []
 }
