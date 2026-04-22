@@ -597,7 +597,8 @@ const Footer = () => {
         </div>
         <div className="pt-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-gray-400 font-medium text-sm">
-            © 2026 Daxabit. All rights reserved.
+            © 2026 Daxabit Technologies LLP. All rights reserved. {BRANDNAME} is
+            a product built and operated by Daxabit®.
           </p>
           <motion.div
             animate={{ scale: [1, 1.1, 1] }}
@@ -605,7 +606,7 @@ const Footer = () => {
             className="flex items-center gap-2 text-gray-400 font-medium text-sm"
           >
             Made with <Heart className="w-4 h-4 text-red-400 fill-red-400" />{" "}
-            for restaurants
+            for businesses
           </motion.div>
         </div>
       </div>
