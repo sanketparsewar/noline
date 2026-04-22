@@ -133,7 +133,7 @@ const TermsOfService = () => {
               For any questions regarding these terms, contact:
             </p>
             <p className="text-gray-700 text-sm mt-3">
-              <strong>Sanket Parsewar</strong>
+              <strong>Daxabit</strong>
               <br />
               Email: {import.meta.env.VITE_SUPPORT_EMAIL}
             </p>
