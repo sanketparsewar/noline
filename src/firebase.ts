@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getMessaging, onMessage, Messaging } from "firebase/messaging";
 
 const firebaseConfig = {
   projectId: "engaged-octane-465008-v5",
@@ -17,12 +16,3 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
-
-let messaging: Messaging | null = null;
-try {
-  messaging = getMessaging(app);
-} catch (error) {
-  console.warn("Firebase Messaging not supported in this environment:", error);
-}
-
-export { messaging };
