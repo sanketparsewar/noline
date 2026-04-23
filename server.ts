@@ -21,7 +21,7 @@ async function startServer() {
   app.use(vite.middlewares);
 
   // Optional: health check
-  app.get("/api/health", (_, res) => {
+  app.get("/api/health", (_:any, res:any) => {
     res.json({
       status: "ok",
       env: "development",
